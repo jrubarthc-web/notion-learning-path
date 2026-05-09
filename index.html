@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Notion Learning Path</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.11.0/dist/tabler-icons.min.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #ffffff; --bg-secondary: #f7f6f3; --bg-tertiary: #efede9;
+      --text: #1a1a1a; --text-secondary: #6b6b6b; --text-tertiary: #999;
+      --border: rgba(0,0,0,0.10); --border-md: rgba(0,0,0,0.18);
+      --radius-md: 8px; --radius-lg: 12px;
+      --success-bg: #eaf3de; --success-text: #3b6d11;
+      --warning-bg: #faeeda; --warning-text: #854f0b;
+      --danger-bg: #fcebeb; --danger-text: #a32d2d;
+      --info-bg: #e6f1fb; --info-text: #185fa5;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #1a1a1a; --bg-secondary: #242424; --bg-tertiary: #2e2e2e;
+        --text: #f0ede8; --text-secondary: #a0a0a0; --text-tertiary: #666;
+        --border: rgba(255,255,255,0.10); --border-md: rgba(255,255,255,0.18);
+        --success-bg: #173404; --success-text: #c0dd97;
+        --warning-bg: #412402; --warning-text: #fac775;
+        --danger-bg: #501313; --danger-text: #f7c1c1;
+        --info-bg: #042c53; --info-text: #b5d4f4;
+      }
+    }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--bg-tertiary); color: var(--text); min-height: 100vh; padding: 2rem 1rem; }
+    .page { max-width: 720px; margin: 0 auto; background: var(--bg); border-radius: var(--radius-lg); border: 0.5px solid var(--border); padding: 2rem 2.5rem 3rem; }
+    @media (max-width: 600px) { .page { padding: 1.25rem 1rem 2rem; } }
+    .header { padding-bottom: 1.5rem; border-bottom: 0.5px solid var(--border); margin-bottom: 1.5rem; }
+    .header-row { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+    .nlogo { width: 30px; height: 30px; background: var(--text); border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .nlogo span { color: var(--bg); font-weight: 700; font-size: 15px; }
+    .header h1 { font-size: 22px; font-weight: 600; color: var(--text); }
+    .header p { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
+    .badge { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; padding: 3px 10px; border-radius: 20px; background: var(--info-bg); color: var(--info-text); margin-top: 10px; }
+    .pb-wrap { margin-top: 1.25rem; }
+    .pb { height: 4px; background: var(--bg-tertiary); border-radius: 2px; }
+    .pb-fill { height: 4px; background: var(--text); border-radius: 2px; width: 0%; transition: width 0.4s ease; }
+    .pb-lbl { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-secondary); margin-top: 5px; }
+    .mod { border: 0.5px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 10px; }
+    .mod-hdr { display: flex; align-items: center; gap: 12px; padding: 14px 16px; cursor: pointer; user-select: none; transition: background 0.15s; }
+    .mod-hdr:hover { background: var(--bg-secondary); }
+    .mod-num { width: 26px; height: 26px; border-radius: 50%; border: 0.5px solid var(--border-md); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: var(--text-secondary); flex-shrink: 0; transition: all 0.2s; }
+    .mod-num.done { background: var(--text); border-color: var(--text); color: var(--bg); }
+    .mod-info { flex: 1; min-width: 0; }
+    .mod-title { font-size: 14px; font-weight: 600; color: var(--text); }
+    .mod-desc { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+    .lvl { font-size: 11px; padding: 2px 9px; border-radius: 20px; font-weight: 500; flex-shrink: 0; }
+    .lv0 { background: var(--bg-secondary); color: var(--text-secondary); }
+    .lv1 { background: var(--success-bg); color: var(--success-text); }
+    .lv2 { background: var(--warning-bg); color: var(--warning-text); }
+    .lv3 { background: var(--danger-bg); color: var(--danger-text); }
+    .chev { font-size: 16px; color: var(--text-secondary); transition: transform 0.2s; flex-shrink: 0; }
+    .chev.open { transform: rotate(180deg); }
+    .lessons { display: none; border-top: 0.5px solid var(--border); }
+    .lessons.open { display: block; }
+    .lesson { border-bottom: 0.5px solid var(--border); }
+    .lesson:last-child { border-bottom: none; }
+    .lesson-row { display: flex; align-items: center; gap: 10px; padding: 11px 16px; cursor: pointer; user-select: none; transition: background 0.15s; }
+    .lesson-row:hover { background: var(--bg-secondary); }
+    .lchk { width: 17px; height: 17px; border-radius: 4px; border: 0.5px solid var(--border-md); display: flex; align-items: center; justify-content: center; flex-shrink: 0; cursor: pointer; transition: all 0.15s; }
+    .lchk.done { background: var(--text); border-color: var(--text); }
+    .lchk i { font-size: 10px; color: transparent; }
+    .lchk.done i { color: var(--bg); }
+    .lesson-name { flex: 1; font-size: 13px; color: var(--text); }
+    .lesson-name.done { color: var(--text-secondary); text-decoration: line-through; }
+    .ltag { font-size: 11px; color: var(--text-secondary); background: var(--bg-secondary); padding: 2px 8px; border-radius: 20px; flex-shrink: 0; }
+    .lexp { font-size: 14px; color: var(--text-secondary); flex-shrink: 0; transition: transform 0.2s; }
+    .lexp.open { transform: rotate(90deg); }
+    .lesson-detail { display: none; padding: 0 16px 16px 43px; }
+    .lesson-detail.open { display: block; }
+    .detail-inner { background: var(--bg-secondary); border-radius: var(--radius-md); padding: 16px; }
+    .detail-inner h4 { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 10px; }
+    .detail-inner .intro { font-size: 13px; color: var(--text-secondary); line-height: 1.65; margin-bottom: 12px; }
+    .tips { display: flex; flex-direction: column; gap: 7px; margin-bottom: 14px; }
+    .tip { display: flex; gap: 9px; align-items: flex-start; }
+    .tip i { font-size: 14px; color: var(--text); flex-shrink: 0; margin-top: 1px; }
+    .tip span { font-size: 13px; color: var(--text-secondary); line-height: 1.55; }
+    .links-section { border-top: 0.5px solid var(--border); padding-top: 12px; margin-top: 4px; }
+    .links-lbl { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-tertiary); margin-bottom: 8px; }
+    .links-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+    .nlink { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; color: var(--text); text-decoration: none; border: 0.5px solid var(--border-md); border-radius: var(--radius-md); padding: 5px 11px; transition: background 0.15s; }
+    .nlink:hover { background: var(--bg); }
+    .nlink i { font-size: 12px; color: var(--text-secondary); }
+    .mark-btn { margin-top: 14px; display: inline-flex; align-items: center; gap: 6px; font-size: 12px; padding: 6px 14px; border-radius: var(--radius-md); border: 0.5px solid var(--border-md); background: transparent; color: var(--text-secondary); cursor: pointer; transition: all 0.15s; font-family: inherit; }
+    .mark-btn:hover { background: var(--bg); color: var(--text); }
+    .mark-btn.done-btn { border-color: var(--text); color: var(--text); background: var(--bg); }
+    .footer { margin-top: 2rem; padding-top: 1.25rem; border-top: 0.5px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+    .footer p { font-size: 12px; color: var(--text-secondary); }
+    .rst { font-size: 12px; padding: 5px 13px; border-radius: var(--radius-md); border: 0.5px solid var(--border-md); background: transparent; color: var(--text-secondary); cursor: pointer; font-family: inherit; transition: background 0.15s; }
+    .rst:hover { background: var(--bg-secondary); }
+  </style>
+</head>
+<body>
+<div class="page">
+  <div class="header">
+    <div class="header-row">
+      <div class="nlogo"><span>N</span></div>
+      <h1>Notion Learning Path</h1>
+    </div>
+    <p>De cero a avanzado · Plan Business</p>
+    <div class="badge"><i class="ti ti-users"></i> Para tu equipo</div>
+    <div class="pb-wrap">
+      <div class="pb"><div class="pb-fill" id="pbfill"></div></div>
+      <div class="pb-lbl"><span id="pbtxt">0 temas completados</span><span id="pbpct">0%</span></div>
+    </div>
+  </div>
+  <div id="mods"></div>
+  <div class="footer">
+    <p id="ftrmsg">Expandí cada subtema para ver el contenido</p>
+    <button class="rst" onclick="resetAll()">Reiniciar progreso</button>
+  </div>
+</div>
+<script>
+const data = [
+  {
+    title: "Primeros pasos", desc: "Qué es Notion y cómo empezar desde cero", level: 0, lv: "Paso 0",
+    lessons: [
+      { name: "¿Qué es un bloque?", tag: "Concepto", intro: "Todo en Notion es un bloque: texto, imágenes, listas, bases de datos. Entender esto es la base de todo lo demás.", tips: ["Cada línea de texto es un bloque.", "Podés mover, transformar y duplicar cualquier bloque.", "Usá '/' para insertar cualquier tipo de bloque."], links: [{ label: "Qué es un bloque", url: "https://www.notion.com/help/what-is-a-block" }] },
+      { name: "Crear tu primera página", tag: "Práctica", intro: "Una página es el contenedor principal en Notion. Podés crear páginas para proyectos, notas, wikis y más.", tips: ["Hacé clic en '+ Nueva página' en el sidebar.", "Podés agregar ícono y portada a cualquier página.", "Las páginas pueden contener otras páginas (sub-páginas)."], links: [{ label: "Crear una página", url: "https://www.notion.com/help/create-your-first-page" }] },
+      { name: "Crear una sub-página", tag: "Práctica", intro: "Las sub-páginas te permiten organizar la información en jerarquías dentro de Notion.", tips: ["Podés anidar páginas dentro de páginas infinitamente.", "Usá el comando /page para crear una sub-página inline.", "El sidebar muestra la jerarquía completa expandiendo cada página."], links: [{ label: "Crear sub-páginas", url: "https://www.notion.com/help/create-a-subpage" }] },
+      { name: "Compartir tu trabajo", tag: "Práctica", intro: "Podés compartir cualquier página de Notion con personas específicas, tu equipo o hacerla pública.", tips: ["Clic en 'Compartir' arriba a la derecha de cualquier página.", "Podés compartir con invitados sin que sean miembros del workspace.", "Elegí el nivel de acceso: ver, comentar o editar."], links: [{ label: "Compartir tu trabajo", url: "https://www.notion.com/help/share-your-work" }] },
+      { name: "Colaborar con tu equipo", tag: "Práctica", intro: "Notion está diseñado para el trabajo en equipo. Podés editar páginas en tiempo real, comentar y mencionar colegas.", tips: ["Varios miembros pueden editar la misma página al mismo tiempo.", "Usá @ para mencionar a alguien y enviarle una notificación.", "Los comentarios se pueden resolver una vez atendidos."], links: [{ label: "Colaborar en Notion", url: "https://www.notion.com/help/collaborate-with-people" }] }
+    ]
+  },
+  {
+    title: "Workspace y sidebar", desc: "Navegar y organizar tu espacio de trabajo", level: 1, lv: "Básico",
+    lessons: [
+      { name: "Intro a los workspaces", tag: "Concepto", intro: "Un workspace es tu espacio principal en Notion. Puede ser personal o de equipo, y contiene todas tus páginas y bases de datos.", tips: ["Podés tener múltiples workspaces.", "El workspace de tu empresa está separado del personal.", "Los admins controlan las configuraciones del workspace."], links: [{ label: "Intro a workspaces", url: "https://www.notion.com/help/intro-to-workspaces" }] },
+      { name: "Navegar con el sidebar", tag: "Práctica", intro: "El sidebar es tu centro de control en Notion. Desde ahí accedés a todas tus páginas, favoritos, teamspaces y configuraciones.", tips: ["Podés colapsar y expandir secciones del sidebar.", "Arrastrá páginas para reorganizarlas.", "Los favoritos aparecen en la parte superior para acceso rápido."], links: [{ label: "Navegar con el sidebar", url: "https://www.notion.com/help/navigate-with-the-sidebar" }] },
+      { name: "Teamspaces (Plan Business)", tag: "Business", intro: "Los teamspaces son espacios dedicados para cada equipo dentro del workspace. Cada uno tiene sus propios miembros y permisos.", tips: ["Podés crear teamspaces para Marketing, Producto, RRHH, etc.", "Un teamspace puede ser abierto, cerrado o privado.", "Solo los miembros de un teamspace privado pueden verlo."], links: [{ label: "Intro a teamspaces", url: "https://www.notion.com/help/intro-to-teamspaces" }] },
+      { name: "Buscar en tu workspace", tag: "Práctica", intro: "La búsqueda de Notion es muy potente: encontrás páginas, bases de datos y contenido en todo tu workspace.", tips: ["Usá Cmd/Ctrl + P para abrir la búsqueda rápida.", "Podés filtrar por tipo de contenido, miembro o fecha.", "La búsqueda también encuentra contenido dentro de las páginas."], links: [{ label: "Buscar en Notion", url: "https://www.notion.com/help/search" }] }
+    ]
+  },
+  {
+    title: "Páginas y bloques", desc: "Escribir, editar y personalizar contenido", level: 1, lv: "Básico",
+    lessons: [
+      { name: "Escritura y edición básica", tag: "Práctica", intro: "En Notion escribís en bloques. Cada párrafo, título o lista es un bloque independiente que podés mover y transformar.", tips: ["Usá '/' para ver todos los tipos de bloques disponibles.", "Seleccioná texto para ver opciones de formato.", "Arrastrá el ícono ⠿ de la izquierda para mover un bloque."], links: [{ label: "Escritura y edición", url: "https://www.notion.com/help/writing-and-editing-basics" }] },
+      { name: "Estilo y personalización de páginas", tag: "Práctica", intro: "Podés personalizar el aspecto de cada página: fuente, ancho, modo oscuro, ícono y portada.", tips: ["Clic en '...' arriba a la derecha para ver opciones de estilo.", "Elegí entre fuente Sans, Serif o Mono.", "Activá 'Vista pequeña' para páginas con mucho contenido."], links: [{ label: "Estilo y personalización", url: "https://www.notion.com/help/customize-and-style-your-content" }] },
+      { name: "Imágenes, archivos y medios", tag: "Práctica", intro: "Podés insertar imágenes, videos, audios y archivos directamente en cualquier página de Notion.", tips: ["Usá /image para insertar una imagen.", "Los videos de YouTube se pueden embeber directamente.", "Podés redimensionar imágenes arrastrando los bordes."], links: [{ label: "Imágenes y archivos", url: "https://www.notion.com/help/images-files-and-media" }] },
+      { name: "Atajos de teclado", tag: "Tip", intro: "Aprender los atajos de Notion te hace mucho más rápido. Los más útiles para el día a día:", tips: ["Cmd/Ctrl + P — Búsqueda rápida.", "Cmd/Ctrl + [ — Ir a la página anterior.", "/ — Abrir menú de bloques.", "@ — Mencionar persona o página."], links: [{ label: "Atajos de teclado", url: "https://www.notion.com/help/keyboard-shortcuts" }] },
+      { name: "Bloques sincronizados", tag: "Avanzado", intro: "Los bloques sincronizados te permiten mostrar el mismo contenido en múltiples páginas. Si lo editás en un lugar, se actualiza en todos.", tips: ["Usá /synced block para crear uno.", "Ideal para avisos que deben aparecer en varias páginas.", "Podés copiar el bloque sincronizado y pegarlo en otra página."], links: [{ label: "Bloques sincronizados", url: "https://www.notion.com/help/synced-blocks" }] }
+    ]
+  },
+  {
+    title: "Bases de datos", desc: "El superpoder de Notion para estructurar información", level: 2, lv: "Intermedio",
+    lessons: [
+      { name: "Intro a las bases de datos", tag: "Concepto", intro: "Una base de datos es una colección de páginas con propiedades estructuradas. Es lo más poderoso de Notion.", tips: ["Cada fila es una página completa con su propio contenido.", "Podés agregar propiedades: texto, fecha, select, persona, etc.", "Todas las vistas muestran los mismos datos, solo cambia la visualización."], links: [{ label: "Intro a bases de datos", url: "https://www.notion.com/help/intro-to-databases" }] },
+      { name: "Vistas, filtros, orden y grupos", tag: "Práctica", intro: "La misma base de datos se puede ver como tabla, tablero, galería, calendario, lista o timeline.", tips: ["Vista Tabla: ideal para ver muchos campos a la vez.", "Vista Tablero (Kanban): perfecta para gestión por estado.", "Filtrá y ordená sin afectar a los otros usuarios de la DB."], links: [{ label: "Vistas, filtros y orden", url: "https://www.notion.com/help/views-filters-and-sorts" }] },
+      { name: "Propiedades de bases de datos", tag: "Práctica", intro: "Las propiedades son los campos de tu base de datos. Elegir el tipo correcto es clave.", tips: ["Select y Multi-select: para categorías predefinidas.", "Relación: para conectar dos bases de datos entre sí.", "Fórmula: para calcular valores automáticamente.", "Rollup: para resumir datos de una DB relacionada."], links: [{ label: "Propiedades de DB", url: "https://www.notion.com/help/database-properties" }] },
+      { name: "Relaciones y rollups", tag: "Avanzado", intro: "Las relaciones conectan dos bases de datos entre sí. Los rollups permiten resumir información de la DB relacionada.", tips: ["Ejemplo: conectar una DB de Proyectos con una de Tareas.", "Un rollup puede contar, sumar o mostrar valores de la DB relacionada.", "Las relaciones son bidireccionales por defecto."], links: [{ label: "Relaciones y rollups", url: "https://www.notion.com/help/relations-and-rollups" }] },
+      { name: "Templates de bases de datos", tag: "Práctica", intro: "Podés crear templates dentro de una DB para que cada nuevo registro tenga una estructura predefinida.", tips: ["Clic en la flecha junto a 'Nuevo' → '+ Nuevo template'.", "El template puede tener propiedades preconfiguradas y contenido.", "Podés tener múltiples templates para distintos tipos de registros."], links: [{ label: "Templates de DB", url: "https://www.notion.com/help/database-templates" }] },
+      { name: "Linked views", tag: "Avanzado", intro: "Una linked view te permite mostrar una DB en otra página con filtros propios, sin duplicar datos.", tips: ["Escribí /linked para insertar una vista vinculada.", "Cada linked view tiene sus propios filtros y orden.", "Ideal para mostrar tareas de un proyecto específico desde una DB general."], links: [{ label: "Data sources y linked databases", url: "https://www.notion.com/help/data-sources-and-linked-databases" }] }
+    ]
+  },
+  {
+    title: "Proyectos, tareas y wikis", desc: "Gestión de trabajo y conocimiento del equipo", level: 2, lv: "Intermedio",
+    lessons: [
+      { name: "Proyectos y tareas", tag: "Práctica", intro: "Notion tiene un sistema de proyectos y tareas integrado que te permite gestionar el trabajo de tu equipo desde una sola herramienta.", tips: ["Podés crear proyectos con sub-tareas y dependencias.", "Las vistas de timeline y calendario son ideales para gestión de proyectos.", "Conectá proyectos con tareas usando relaciones."], links: [{ label: "Sub-items y dependencias", url: "https://www.notion.com/help/tasks-and-dependencies" }, { label: "Sprints y tareas", url: "https://www.notion.com/help/sprints" }] },
+      { name: "Wikis y páginas verificadas", tag: "Práctica", intro: "Los wikis en Notion son la forma de centralizar el conocimiento de tu equipo en un solo lugar, fácil de encontrar y mantener actualizado.", tips: ["Podés marcar páginas como 'verificadas' para indicar que están actualizadas.", "Los wikis tienen un diseño especial con tabla de contenidos.", "Asigná owners a las páginas para que alguien sea responsable de mantenerlas."], links: [{ label: "Wikis y páginas verificadas", url: "https://www.notion.com/help/wikis-and-verified-pages" }] },
+      { name: "Formularios", tag: "Práctica", intro: "Los formularios de Notion te permiten capturar información directamente en una base de datos sin que la persona tenga acceso al workspace.", tips: ["Cada respuesta crea un nuevo registro en la DB conectada.", "Podés personalizar los campos y el mensaje de confirmación.", "Ideal para solicitudes de IT, feedback de clientes, onboarding, etc."], links: [{ label: "Formularios", url: "https://www.notion.com/help/forms" }] },
+      { name: "Gráficos y dashboards", tag: "Avanzado", intro: "Los gráficos de Notion te permiten visualizar datos de tus bases de datos en forma de barras, líneas, tortas y más.", tips: ["Podés crear dashboards combinando múltiples gráficos.", "Los gráficos se actualizan automáticamente cuando cambian los datos.", "Ideal para seguimiento de métricas, OKRs o progreso de proyectos."], links: [{ label: "Vista de gráficos", url: "https://www.notion.com/help/charts" }, { label: "Vista de dashboards", url: "https://www.notion.com/help/dashboards" }] }
+    ]
+  },
+  {
+    title: "Compartir y colaborar", desc: "Permisos, roles y trabajo en equipo", level: 2, lv: "Intermedio",
+    lessons: [
+      { name: "Permisos y compartir páginas", tag: "Práctica", intro: "Podés controlar quién puede ver o editar cada página específicamente.", tips: ["Clic en 'Compartir' arriba a la derecha de cualquier página.", "Los permisos se heredan de la página padre por defecto.", "Podés hacer una página pública sin compartir todo el workspace."], links: [{ label: "Permisos y compartir", url: "https://www.notion.com/help/sharing-and-permissions" }] },
+      { name: "Gestionar miembros e invitados", tag: "Práctica", intro: "Podés invitar personas al workspace como miembros o agregarlos a páginas específicas como invitados.", tips: ["Owner: control total del workspace.", "Member: puede crear y editar según permisos.", "Guest: acceso solo a páginas específicas que le compartís."], links: [{ label: "Miembros e invitados", url: "https://www.notion.com/help/add-members-admins-guests-and-groups" }] },
+      { name: "Comentarios, menciones y reacciones", tag: "Práctica", intro: "Notion tiene herramientas de colaboración integradas para comunicarse dentro del contexto del trabajo.", tips: ["Seleccioná texto y hacé clic en el ícono de comentario.", "Usá @ para mencionar a alguien y enviarle una notificación.", "Podés reaccionar con emojis a cualquier comentario."], links: [{ label: "Comentarios y menciones", url: "https://www.notion.com/help/comments-mentions-and-reminders" }] },
+      { name: "Notificaciones e inbox", tag: "Práctica", intro: "El inbox de Notion centraliza todas las menciones, comentarios y actualizaciones de páginas que seguís.", tips: ["Accedé al inbox desde el sidebar izquierdo.", "Podés configurar qué notificaciones recibís por email.", "Marcá notificaciones como leídas o archivadas."], links: [{ label: "Inbox y notificaciones", url: "https://www.notion.com/help/updates-and-notifications" }] }
+    ]
+  },
+  {
+    title: "Automatizaciones", desc: "Automatizar tareas y flujos de trabajo", level: 3, lv: "Avanzado",
+    lessons: [
+      { name: "Botones en páginas", tag: "Práctica", intro: "Los botones te permiten ejecutar acciones con un clic: insertar bloques, crear páginas en una DB, editar propiedades y más.", tips: ["Usá /button para insertar un botón en cualquier página.", "Podés configurar múltiples acciones en un solo botón.", "Ideal para plantillas de reuniones, checklists o flujos repetitivos."], links: [{ label: "Botones en páginas", url: "https://www.notion.com/help/buttons" }] },
+      { name: "Botones en bases de datos", tag: "Práctica", intro: "Los database buttons son propiedades especiales que ejecutan acciones sobre el registro de una base de datos.", tips: ["Podés crear botones para cambiar el estado, asignar fecha, enviar notificaciones.", "Cada botón puede tener múltiples pasos.", "Útil para flujos de aprobación o escalamiento."], links: [{ label: "Botones en bases de datos", url: "https://www.notion.com/help/database-buttons" }] },
+      { name: "Automatizaciones en bases de datos", tag: "Avanzado", intro: "Las automatizaciones se activan automáticamente cuando algo cambia en una DB, sin necesidad de hacer clic.", tips: ["Ejemplo: cuando Estado cambia a 'Listo', asignar fecha de cierre automáticamente.", "Podés enviar notificaciones a Slack o crear páginas automáticamente.", "Accedé desde el menú ⚡ de cualquier base de datos."], links: [{ label: "Automatizaciones en DB", url: "https://www.notion.com/help/database-automations" }] }
+    ]
+  },
+  {
+    title: "Notion AI", desc: "Inteligencia artificial integrada en tu workspace", level: 3, lv: "Avanzado",
+    lessons: [
+      { name: "Introducción a Notion AI", tag: "Concepto", intro: "Notion AI es un asistente integrado en el editor y en las bases de datos. Disponible con la barra espaciadora o el menú /.", tips: ["Puede redactar, resumir, traducir y mejorar textos.", "Tiene acceso al contenido de tu workspace para respuestas contextuales.", "Incluido en el Plan Business sin costo adicional."], links: [{ label: "Notion AI", url: "https://www.notion.com/product/ai" }, { label: "Qué es Notion AI", url: "https://www.notion.com/help/notion-ai-faqs" }] },
+      { name: "Notion AI para bases de datos", tag: "Avanzado", intro: "Podés agregar propiedades de tipo AI a cualquier base de datos que se completan automáticamente.", tips: ["Ejemplo: una propiedad que resume cada nota de reunión.", "Ejemplo: una propiedad que clasifica el sentimiento de un feedback.", "Podés elegir cuándo se actualiza: manualmente, al crear o al editar."], links: [{ label: "Notion AI Autofill", url: "https://www.notion.com/help/autofill" }] },
+      { name: "Notion Agent", tag: "Avanzado", intro: "El Notion Agent puede ejecutar tareas complejas de forma autónoma en tu workspace: crear páginas, actualizar bases de datos, buscar información.", tips: ["Podés darle instrucciones en lenguaje natural.", "Tiene acceso a tu workspace y apps conectadas como Slack y Google Drive.", "Disponible en el Plan Business."], links: [{ label: "Notion Agent", url: "https://www.notion.com/help/notion-agent" }] }
+    ]
+  },
+  {
+    title: "Integraciones y API", desc: "Conectar Notion con el resto de tus herramientas", level: 3, lv: "Avanzado",
+    lessons: [
+      { name: "Embeds e integraciones", tag: "Práctica", intro: "Notion se conecta con cientos de herramientas populares. Podés insertar contenido de otras apps directamente en tus páginas.", tips: ["Pegá cualquier URL en Notion y seleccioná 'Crear embed'.", "Los embeds muestran el contenido en vivo dentro de la página.", "Usá /embed para insertar contenido de cualquier app."], links: [{ label: "Embeds y bookmarks", url: "https://www.notion.com/help/embed-and-connect-other-apps" }, { label: "Gestionar integraciones", url: "https://www.notion.com/help/add-and-manage-connections-with-the-api" }] },
+      { name: "Integrar GitHub", tag: "Avanzado", intro: "Podés conectar GitHub con Notion para ver issues, PRs y commits directamente en tus páginas y bases de datos.", tips: ["Mencioná issues o PRs de GitHub y se mostrarán como previews.", "Podés sincronizar datos de GitHub en una base de datos de Notion.", "Útil para equipos de producto e ingeniería."], links: [{ label: "Integrar GitHub", url: "https://www.notion.com/help/github" }] },
+      { name: "Integrar Slack", tag: "Avanzado", intro: "Conectá Slack con Notion para compartir páginas, recibir notificaciones y crear páginas desde mensajes de Slack.", tips: ["Compartí páginas de Notion en Slack con preview enriquecida.", "Podés enviar notificaciones de automatizaciones a canales de Slack.", "Creá páginas de Notion directamente desde mensajes de Slack."], links: [{ label: "Integrar Slack", url: "https://www.notion.com/help/slack" }] },
+      { name: "Notion API", tag: "Avanzado", intro: "La API de Notion permite leer y escribir datos desde cualquier app o script externo.", tips: ["Accedé desde developers.notion.com para crear una integration.", "Podés crear registros, leer páginas y actualizar propiedades.", "Make y Zapier tienen conectores para la API sin necesidad de código."], links: [{ label: "API de Notion", url: "https://www.notion.com/help/create-integrations-with-the-notion-api" }, { label: "Documentación oficial", url: "https://developers.notion.com" }] }
+    ]
+  }
+];
+
+const SKEY = "nlp_v6";
+let checked = {};
+try { checked = JSON.parse(localStorage.getItem(SKEY) || "{}"); } catch(e) {}
+function save() { try { localStorage.setItem(SKEY, JSON.stringify(checked)); } catch(e) {} }
+function totals() {
+  let total = 0, done = 0;
+  data.forEach((m, mi) => m.lessons.forEach((_, li) => { total++; if (checked[`${mi}-${li}`]) done++; }));
+  return { total, done };
+}
+function updateProgress() {
+  const { total, done } = totals();
+  const pct = Math.round((done / total) * 100);
+  document.getElementById("pbfill").style.width = pct + "%";
+  document.getElementById("pbtxt").textContent = `${done} de ${total} temas completados`;
+  document.getElementById("pbpct").textContent = pct + "%";
+  document.getElementById("ftrmsg").textContent = pct === 0 ? "Expandí cada subtema para ver el contenido" : pct === 100 ? "¡Completaste todo el learning path! 🎉" : `Vas ${pct}% del camino — ¡seguí así!`;
+  data.forEach((m, mi) => {
+    const allDone = m.lessons.every((_, li) => checked[`${mi}-${li}`]);
+    const el = document.getElementById(`mnum-${mi}`);
+    if (!el) return;
+    if (allDone) { el.classList.add("done"); el.innerHTML = '<i class="ti ti-check"></i>'; }
+    else { el.classList.remove("done"); el.textContent = mi; }
+  });
+}
+function toggleMod(mi) {
+  const el = document.getElementById(`ml-${mi}`); const chev = document.getElementById(`mc-${mi}`);
+  const open = el.classList.contains("open");
+  el.classList.toggle("open", !open); chev.classList.toggle("open", !open);
+}
+function toggleLesson(mi, li) {
+  const det = document.getElementById(`ld-${mi}-${li}`); const chev = document.getElementById(`lc-${mi}-${li}`);
+  const open = det.classList.contains("open");
+  det.classList.toggle("open", !open); if (chev) chev.classList.toggle("open", !open);
+}
+function markDone(mi, li, e) {
+  if (e) e.stopPropagation();
+  const key = `${mi}-${li}`; checked[key] = !checked[key]; save();
+  const isDone = checked[key];
+  const chk = document.getElementById(`lchk-${mi}-${li}`);
+  const txt = document.getElementById(`ltxt-${mi}-${li}`);
+  const btn = document.getElementById(`lbtn-${mi}-${li}`);
+  if (chk) chk.classList.toggle("done", isDone);
+  if (txt) txt.classList.toggle("done", isDone);
+  if (btn) { btn.classList.toggle("done-btn", isDone); btn.innerHTML = isDone ? '<i class="ti ti-check"></i> Completado' : '<i class="ti ti-circle-check"></i> Marcar como completado'; }
+  updateProgress();
+}
+function resetAll() {
+  if (!confirm("¿Reiniciar todo el progreso?")) return;
+  checked = {}; save();
+  document.querySelectorAll(".lchk").forEach(el => el.classList.remove("done"));
+  document.querySelectorAll(".lesson-name").forEach(el => el.classList.remove("done"));
+  document.querySelectorAll(".mark-btn").forEach(btn => { btn.classList.remove("done-btn"); btn.innerHTML = '<i class="ti ti-circle-check"></i> Marcar como completado'; });
+  updateProgress();
+}
+function render() {
+  const container = document.getElementById("mods");
+  data.forEach((m, mi) => {
+    const lessonsHTML = m.lessons.map((l, li) => {
+      const isDone = checked[`${mi}-${li}`];
+      const tipsHTML = l.tips.map(t => `<div class="tip"><i class="ti ti-point-filled"></i><span>${t}</span></div>`).join("");
+      const linksHTML = l.links.map(lk => `<a class="nlink" href="${lk.url}" target="_blank" rel="noopener"><i class="ti ti-external-link"></i>${lk.label}</a>`).join("");
+      return `<div class="lesson">
+        <div class="lesson-row" onclick="toggleLesson(${mi},${li})">
+          <div class="lchk ${isDone?'done':''}" id="lchk-${mi}-${li}" onclick="markDone(${mi},${li},event)"><i class="ti ti-check"></i></div>
+          <span class="lesson-name ${isDone?'done':''}" id="ltxt-${mi}-${li}">${l.name}</span>
+          <span class="ltag">${l.tag}</span>
+          <i class="ti ti-chevron-right lexp" id="lc-${mi}-${li}"></i>
+        </div>
+        <div class="lesson-detail" id="ld-${mi}-${li}">
+          <div class="detail-inner">
+            <h4>${l.name}</h4>
+            <p class="intro">${l.intro}</p>
+            <div class="tips">${tipsHTML}</div>
+            <div class="links-section">
+              <div class="links-lbl">Documentación oficial de Notion</div>
+              <div class="links-grid">${linksHTML}</div>
+            </div>
+            <button class="mark-btn ${isDone?'done-btn':''}" id="lbtn-${mi}-${li}" onclick="markDone(${mi},${li},event)">
+              ${isDone?'<i class="ti ti-check"></i> Completado':'<i class="ti ti-circle-check"></i> Marcar como completado'}
+            </button>
+          </div>
+        </div>
+      </div>`;
+    }).join("");
+    const card = document.createElement("div");
+    card.className = "mod";
+    card.innerHTML = `
+      <div class="mod-hdr" onclick="toggleMod(${mi})">
+        <div class="mod-num ${m.lessons.every((_,li)=>checked[`${mi}-${li}`])?'done':''}" id="mnum-${mi}">
+          ${m.lessons.every((_,li)=>checked[`${mi}-${li}`])?'<i class="ti ti-check"></i>':mi}
+        </div>
+        <div class="mod-info"><div class="mod-title">${m.title}</div><div class="mod-desc">${m.desc}</div></div>
+        <span class="lvl lv${m.level}">${m.lv}</span>
+        <i class="ti ti-chevron-down chev" id="mc-${mi}"></i>
+      </div>
+      <div class="lessons" id="ml-${mi}">${lessonsHTML}</div>`;
+    container.appendChild(card);
+  });
+  document.getElementById("ml-0").classList.add("open");
+  document.getElementById("mc-0").classList.add("open");
+  updateProgress();
+}
+render();
+</script>
+</body>
+</html>
